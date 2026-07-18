@@ -1,0 +1,180 @@
+// Kronos — Entrepreneur OS
+// PostgreSQL for Vercel + mobile PWA (Neon free tier).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String         @id @default(cuid())
+  email           String         @unique
+  name            String?
+  passwordHash    String?
+  /// Opt-in for Kit / ConvertKit announcements
+  marketingOptIn  Boolean        @default(false)
+  kitSubscriberId String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  memberships     TenantMember[]
+}
+
+model Tenant {
+  id              String           @id @default(cuid())
+  name            String
+  slug            String           @unique
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  members         TenantMember[]
+  projects        Project[]
+  skills          Skill[]
+  timeLogs        TimeLog[]
+  expenseLogs     ExpenseLog[]
+  contextSwitches ContextSwitch[]
+  pomodoroPrefs   PomodoroPrefs?
+}
+
+model TenantMember {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String
+  role      String   @default("owner") // owner | member | viewer
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+}
+
+model Project {
+  id              String           @id @default(cuid())
+  tenantId        String
+  name            String
+  slug            String
+  color           String           @default("#C8F560")
+  kind            String           @default("brand") // brand | personal | lifestyle
+  isActive        Boolean          @default(true)
+  sortOrder       Int              @default(0)
+  /// Optional CAD/hour used to estimate capital value of logged time
+  hourlyRateCents Int?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timeLogs        TimeLog[]
+  expenseLogs     ExpenseLog[]
+  skillLinks      ProjectSkill[]
+  switchesFrom    ContextSwitch[]  @relation("SwitchFrom")
+  switchesTo      ContextSwitch[]  @relation("SwitchTo")
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, isActive])
+}
+
+/// DEEP_WORK | SHALLOW_WORK | RECHARGE
+model TimeLog {
+  id              String     @id @default(cuid())
+  tenantId        String
+  projectId       String
+  category        String     @default("DEEP_WORK")
+  durationMinutes Int
+  startedAt       DateTime
+  endedAt         DateTime?
+  note            String?
+  /// manual | stopwatch | pomodoro
+  source          String     @default("manual")
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  tenant          Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  project         Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skillLogs       SkillLog[]
+
+  @@index([tenantId, startedAt])
+  @@index([projectId, startedAt])
+  @@index([tenantId, category])
+}
+
+model ExpenseLog {
+  id          String   @id @default(cuid())
+  tenantId    String
+  projectId   String
+  amountCents Int
+  currency    String   @default("CAD")
+  description String?
+  spentAt     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, spentAt])
+  @@index([projectId, spentAt])
+}
+
+model Skill {
+  id        String         @id @default(cuid())
+  tenantId  String
+  name      String
+  slug      String
+  xp        Int            @default(0)
+  level     Int            @default(1)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  logs      SkillLog[]
+  projects  ProjectSkill[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+}
+
+model ProjectSkill {
+  id        String  @id @default(cuid())
+  projectId String
+  skillId   String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, skillId])
+}
+
+model SkillLog {
+  id        String   @id @default(cuid())
+  skillId   String
+  timeLogId String?
+  xpGained  Int
+  note      String?
+  createdAt DateTime @default(now())
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  timeLog   TimeLog? @relation(fields: [timeLogId], references: [id], onDelete: SetNull)
+
+  @@index([skillId, createdAt])
+}
+
+model ContextSwitch {
+  id            String   @id @default(cuid())
+  tenantId      String
+  fromProjectId String?
+  toProjectId   String
+  switchedAt    DateTime @default(now())
+  reason        String?
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fromProject   Project? @relation("SwitchFrom", fields: [fromProjectId], references: [id], onDelete: SetNull)
+  toProject     Project  @relation("SwitchTo", fields: [toProjectId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, switchedAt])
+}
+
+model PomodoroPrefs {
+  id            String @id @default(cuid())
+  tenantId      String @unique
+  focusMinutes  Int    @default(25)
+  breakMinutes  Int    @default(5)
+  longBreakMinutes Int @default(15)
+  cyclesBeforeLong Int @default(4)
+  tenant        Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
