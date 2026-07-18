@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { KronosLogo } from "@/components/brand/KronosLogo";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function LoginForm() {
@@ -226,10 +227,10 @@ function AuthCard({
   return (
     <div className="mx-auto flex w-full max-w-md flex-col justify-center py-8">
       <div className="mb-8 text-center">
-        <p className="font-[family-name:var(--font-syne)] text-4xl font-semibold">
-          Kronos
-        </p>
-        <h1 className="mt-4 text-xl font-semibold">{title}</h1>
+        <div className="flex justify-center">
+          <KronosLogo variant="auth" priority className="max-h-32 w-auto sm:max-h-36" />
+        </div>
+        <h1 className="mt-6 text-xl font-semibold">{title}</h1>
         <p className="mt-2 text-sm text-[var(--muted)]">{subtitle}</p>
       </div>
       <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] p-5">

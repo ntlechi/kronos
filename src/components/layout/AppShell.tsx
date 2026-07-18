@@ -14,6 +14,7 @@ import {
   Sun,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { KronosLogo } from "@/components/brand/KronosLogo";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { Locale } from "@/lib/i18n/dictionaries";
 import { useTheme } from "@/lib/theme/ThemeProvider";
@@ -55,10 +56,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 pb-[calc(5.5rem+var(--safe-bottom))] pt-5 sm:px-6">
       <header className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="font-[family-name:var(--font-syne)] text-3xl font-semibold tracking-tight text-[var(--ink)] sm:text-4xl">
-            Kronos
-          </p>
-          <p className="mt-1 text-sm text-[var(--muted)]">{t("brand.tagline")}</p>
+          <KronosLogo variant="header" className="max-h-14 w-auto sm:max-h-16" />
+          <p className="mt-2 text-sm text-[var(--muted)]">{t("brand.tagline")}</p>
           {session?.user?.email && (
             <p className="mt-1 text-xs text-[var(--muted)]">
               {session.user.email}
