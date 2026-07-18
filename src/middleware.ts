@@ -1,6 +1,6 @@
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 const PUBLIC_PATHS = [
   "/login",
@@ -17,7 +17,12 @@ function isPublic(pathname: string) {
   );
 }
 
-export async function middleware(request: NextRequest) {
+const { auth } = NextAuth({
+  ...authConfig,
+  secret: process.env.AUTH_SECRET,
+});
+
+export default auth((request) => {
   const { pathname } = request.nextUrl;
 
   if (
@@ -29,15 +34,13 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isPublic(pathname)) {
+    if (request.auth && (pathname === "/login" || pathname === "/register")) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-  });
-
-  if (!token) {
+  if (!request.auth) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -47,7 +50,7 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|.*\\..*).*)"],

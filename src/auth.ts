@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
+import { authConfig } from "@/auth.config";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/auth/password";
 
@@ -10,10 +11,8 @@ const credentialsSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-  },
+  ...authConfig,
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       name: "credentials",
@@ -55,21 +54,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.userId = user.id;
-        token.tenantId = (user as { tenantId?: string }).tenantId;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = String(token.userId ?? token.sub ?? "");
-        session.user.tenantId = String(token.tenantId ?? "");
-      }
-      return session;
-    },
-  },
-  trustHost: true,
 });

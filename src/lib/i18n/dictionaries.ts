@@ -188,6 +188,8 @@ const en: Dict = {
   "auth.error.invalid": "Invalid email or password.",
   "auth.error.exists": "That email is already registered.",
   "auth.error.register": "Could not create account. Try again.",
+  "auth.error.signInAfterRegister":
+    "Account created, but sign-in failed. Try logging in.",
   "auth.signOut": "Sign out",
 };
 
@@ -378,6 +380,8 @@ const fr: Dict = {
   "auth.error.invalid": "Courriel ou mot de passe invalide.",
   "auth.error.exists": "Ce courriel est déjà inscrit.",
   "auth.error.register": "Impossible de créer le compte. Réessaie.",
+  "auth.error.signInAfterRegister":
+    "Compte créé, mais la connexion a échoué. Essaie de te connecter.",
   "auth.signOut": "Se déconnecter",
 };
 
