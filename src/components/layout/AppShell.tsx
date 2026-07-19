@@ -5,11 +5,11 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
   ChartPie,
-  Clock3,
   Flame,
   Layers3,
   LogOut,
   Moon,
+  Plus,
   Sparkles,
   Sun,
 } from "lucide-react";
@@ -19,9 +19,8 @@ import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { Locale } from "@/lib/i18n/dictionaries";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 
-const nav = [
+const sideNav = [
   { href: "/", labelKey: "nav.pulse", icon: ChartPie },
-  { href: "/log", labelKey: "nav.log", icon: Clock3 },
   { href: "/pomodoro", labelKey: "nav.focus", icon: Flame },
   { href: "/activities", labelKey: "nav.activities", icon: Layers3 },
   { href: "/skills", labelKey: "nav.skills", icon: Sparkles },
@@ -34,6 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/register");
+  const logActive = pathname.startsWith("/log");
 
   if (isAuthRoute) {
     return (
@@ -53,7 +53,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 pb-[calc(5.5rem+var(--safe-bottom))] pt-5 sm:px-6">
+    <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 pb-[calc(6.25rem+var(--safe-bottom))] pt-5 sm:px-6">
       <header className="mb-6 flex items-end justify-between gap-4">
         <div>
           <KronosLogo variant="header" className="max-h-14 w-auto sm:max-h-16" />
@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           href="https://arsitech.io"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 transition-colors hover:text-[var(--accent)] hover:decoration-[var(--accent)]"
+          className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 transition-colors hover:text-[var(--ink)]"
         >
           Arsitech.io
         </a>
@@ -105,36 +105,69 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           background: "var(--nav-bg)",
         }}
       >
-        <ul className="mx-auto grid max-w-5xl grid-cols-5 gap-0.5 px-1 py-2 sm:px-2">
-          {nav.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href) ||
-                  (item.href === "/activities" &&
-                    pathname.startsWith("/projects"));
-            const Icon = item.icon;
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  prefetch={false}
-                  className={cn(
-                    "flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-[10px] transition-colors sm:text-[11px]",
-                    active
-                      ? "bg-[var(--accent-dim)] font-medium text-[var(--accent)]"
-                      : "text-[var(--muted)] hover:text-[var(--ink)]",
-                  )}
-                >
-                  <Icon size={18} strokeWidth={active ? 2.4 : 1.8} />
-                  <span>{t(item.labelKey)}</span>
-                </Link>
-              </li>
-            );
-          })}
+        <ul className="mx-auto grid max-w-5xl grid-cols-5 items-end gap-0.5 px-1 py-2 sm:px-2">
+          {sideNav.slice(0, 2).map((item) => (
+            <NavItem key={item.href} item={item} pathname={pathname} t={t} />
+          ))}
+
+          <li className="relative flex justify-center">
+            <Link
+              href="/log"
+              prefetch={false}
+              aria-label={t("nav.log")}
+              className={cn(
+                "absolute -top-5 flex h-14 w-14 flex-col items-center justify-center rounded-full shadow-lg transition-transform active:scale-95 accent-fill ring-4 ring-[var(--bg)]",
+                logActive && "scale-105",
+              )}
+            >
+              <Plus size={22} strokeWidth={2.4} />
+            </Link>
+            <span className="mt-10 text-[10px] text-[var(--muted)] sm:text-[11px]">
+              {t("nav.log")}
+            </span>
+          </li>
+
+          {sideNav.slice(2).map((item) => (
+            <NavItem key={item.href} item={item} pathname={pathname} t={t} />
+          ))}
         </ul>
       </nav>
     </div>
+  );
+}
+
+function NavItem({
+  item,
+  pathname,
+  t,
+}: {
+  item: (typeof sideNav)[number];
+  pathname: string;
+  t: (key: string) => string;
+}) {
+  const active =
+    item.href === "/"
+      ? pathname === "/"
+      : pathname.startsWith(item.href) ||
+        (item.href === "/activities" && pathname.startsWith("/projects"));
+  const Icon = item.icon;
+
+  return (
+    <li>
+      <Link
+        href={item.href}
+        prefetch={false}
+        className={cn(
+          "flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-[10px] transition-colors sm:text-[11px]",
+          active
+            ? "bg-[var(--bg-soft)] font-medium text-[var(--ink)]"
+            : "text-[var(--muted)] hover:text-[var(--ink)]",
+        )}
+      >
+        <Icon size={18} strokeWidth={active ? 2.4 : 1.8} />
+        <span>{t(item.labelKey)}</span>
+      </Link>
+    </li>
   );
 }
 
@@ -174,7 +207,9 @@ function ThemeLocaleControls({
             onClick={() => setLocale(code)}
             className={cn(
               "min-h-9 min-w-10 rounded-full px-2 text-xs font-semibold tracking-wide transition-colors",
-              locale === code ? "accent-fill" : "text-[var(--muted)]",
+              locale === code
+                ? "bg-[var(--bg-soft)] text-[var(--ink)]"
+                : "text-[var(--muted)]",
             )}
           >
             {t(`locale.${code}`)}

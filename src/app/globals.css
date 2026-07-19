@@ -1,41 +1,41 @@
 @import "tailwindcss";
 
-/* Dark (default): warm professional atmosphere + readable contrast */
+/* Dark: cool charcoal elevation — lime reserved for primary action */
 :root,
 html[data-theme="dark"] {
-  --bg: #141210;
-  --bg-elevated: #1e1b18;
-  --bg-soft: #2a2622;
-  --ink: #f5f0e8;
-  --muted: #b7aea2;
-  --line: rgba(245, 240, 232, 0.12);
-  --accent: #d4e86a;
-  --accent-ink: #1a1814;
-  --accent-dim: rgba(212, 232, 106, 0.16);
+  --bg: #0e0f10;
+  --bg-elevated: #16181a;
+  --bg-soft: #1c1f22;
+  --ink: #eceef0;
+  --muted: #8b929a;
+  --line: rgba(236, 238, 240, 0.1);
+  --accent: #c8f560;
+  --accent-ink: #0e0f10;
+  --accent-dim: rgba(200, 245, 96, 0.12);
   --warn: #e8b84a;
   --danger: #f07178;
   --ok: #7dcea0;
-  --nav-bg: rgba(20, 18, 16, 0.92);
+  --nav-bg: rgba(14, 15, 16, 0.94);
   --radius: 18px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   color-scheme: dark;
 }
 
-/* Light: warm paper, high-contrast ink */
+/* Light: cool paper, high-contrast ink */
 html[data-theme="light"] {
-  --bg: #f3efe8;
+  --bg: #f2f3f4;
   --bg-elevated: #ffffff;
-  --bg-soft: #e8e2d8;
-  --ink: #1a1814;
-  --muted: #5f5850;
-  --line: rgba(26, 24, 20, 0.12);
-  --accent: #6b7f1a;
-  --accent-ink: #f7f4ec;
-  --accent-dim: rgba(107, 127, 26, 0.12);
+  --bg-soft: #e8eaec;
+  --ink: #121416;
+  --muted: #5c636b;
+  --line: rgba(18, 20, 22, 0.1);
+  --accent: #5f7a14;
+  --accent-ink: #f7f8f4;
+  --accent-dim: rgba(95, 122, 20, 0.1);
   --warn: #b45309;
   --danger: #b91c1c;
   --ok: #15803d;
-  --nav-bg: rgba(243, 239, 232, 0.94);
+  --nav-bg: rgba(242, 243, 244, 0.96);
   color-scheme: light;
 }
 
@@ -47,6 +47,7 @@ html[data-theme="light"] {
   --color-accent-ink: var(--accent-ink);
   --font-sans: var(--font-dm-sans);
   --font-display: var(--font-syne);
+  --font-metric: var(--font-jetbrains-mono);
 }
 
 * {
@@ -64,16 +65,14 @@ body {
   font-family: var(--font-dm-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   background:
-    radial-gradient(1100px 520px at 8% -8%, rgba(212, 232, 106, 0.1), transparent 55%),
-    radial-gradient(900px 480px at 100% 0%, rgba(180, 140, 90, 0.08), transparent 50%),
-    linear-gradient(180deg, #1a1714 0%, var(--bg) 42%, #100e0c 100%);
+    radial-gradient(900px 420px at 100% -10%, rgba(120, 140, 160, 0.06), transparent 55%),
+    linear-gradient(180deg, #121416 0%, var(--bg) 40%, #0a0b0c 100%);
 }
 
 html[data-theme="light"] body {
   background:
-    radial-gradient(1000px 480px at 10% -10%, rgba(107, 127, 26, 0.08), transparent 55%),
-    radial-gradient(800px 420px at 100% 0%, rgba(180, 140, 90, 0.06), transparent 50%),
-    linear-gradient(180deg, #f7f4ee 0%, var(--bg) 45%, #ebe6dc 100%);
+    radial-gradient(900px 420px at 100% -10%, rgba(95, 122, 20, 0.05), transparent 55%),
+    linear-gradient(180deg, #f7f8f9 0%, var(--bg) 45%, #eceef0 100%);
 }
 
 a {
@@ -95,7 +94,7 @@ textarea {
   color: var(--ink);
 }
 
-/* Accent fills always use dark ink in dark mode / light ink in light mode */
+/* Accent fills — primary CTA only */
 .accent-fill {
   background-color: var(--accent) !important;
   color: var(--accent-ink) !important;
@@ -105,9 +104,44 @@ textarea {
   color: inherit !important;
 }
 
+/* Telemetry — distinct zeros, tabular figures */
+.metric {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: -0.02em;
+}
+
+.chip-selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--ink);
+}
+
+.chip-idle {
+  border-color: var(--line);
+  background: var(--bg-elevated);
+  color: var(--muted);
+}
+
 ::selection {
   background: var(--accent);
   color: var(--accent-ink);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-in {
+  animation: toast-in 280ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

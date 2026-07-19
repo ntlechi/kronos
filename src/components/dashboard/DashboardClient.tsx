@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { ActivityTimeGauges } from "@/components/dashboard/ActivityTimeGauges";
 import { BurnoutBanner } from "@/components/dashboard/BurnoutBanner";
 import { FoldableSkills } from "@/components/dashboard/FoldableSkills";
@@ -9,6 +8,14 @@ import { PeriodTabs } from "@/components/dashboard/PeriodTabs";
 import { StatStrip } from "@/components/dashboard/StatStrip";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { DashboardSummary, Period } from "@/lib/types";
+
+const PULSE_KEY = "kronos-log-pulse";
+
+type PulsePayload = {
+  minutes: number;
+  xpGains: { name: string; xp: number }[];
+  at: number;
+};
 
 export function DashboardClient({
   initialPeriod = "week",
@@ -23,6 +30,40 @@ export function DashboardClient({
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [animatePulse, setAnimatePulse] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(PULSE_KEY);
+      if (!raw) return;
+      sessionStorage.removeItem(PULSE_KEY);
+      const payload = JSON.parse(raw) as PulsePayload;
+      if (Date.now() - payload.at > 30_000) return;
+      setAnimatePulse(true);
+      const xpLine =
+        payload.xpGains.length > 0
+          ? payload.xpGains
+              .map((g) => tRef.current("log.xpGain", { xp: g.xp, name: g.name }))
+              .join(" · ")
+          : null;
+      setToast(
+        [
+          tRef.current("log.pulseConfirm", { minutes: payload.minutes }),
+          xpLine,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      );
+      const clear = window.setTimeout(() => {
+        setAnimatePulse(false);
+        setToast(null);
+      }, 4200);
+      return () => window.clearTimeout(clear);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -54,13 +95,13 @@ export function DashboardClient({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PeriodTabs value={period} onChange={setPeriod} />
-        <Link
-          href="/log"
-          className="accent-fill inline-flex min-h-11 items-center rounded-full px-5 text-sm font-semibold"
-        >
-          {t("dashboard.quickLog")}
-        </Link>
       </div>
+
+      {toast && (
+        <div className="toast-in rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-4 py-3 text-sm">
+          <span className="metric font-semibold text-[var(--ink)]">{toast}</span>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-[var(--radius)] border border-[rgba(251,113,133,0.35)] bg-[rgba(251,113,133,0.08)] px-4 py-3 text-sm">
@@ -74,8 +115,11 @@ export function DashboardClient({
 
       {summary && (
         <>
-          <StatStrip summary={summary} />
-          <BurnoutBanner status={summary.burnout} />
+          <StatStrip summary={summary} animate={animatePulse} />
+          <BurnoutBanner
+            status={summary.burnout}
+            deepMinutes={summary.deepMinutes}
+          />
 
           <section className="space-y-3">
             <div className="flex items-end justify-between gap-3">
@@ -89,6 +133,7 @@ export function DashboardClient({
             <ActivityTimeGauges
               activities={summary.projects}
               totalMinutes={summary.totalMinutes}
+              animate={animatePulse}
             />
           </section>
 

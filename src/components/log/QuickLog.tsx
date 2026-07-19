@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Pause, Play, Plus } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
@@ -22,6 +23,7 @@ const categoryKeys: { id: ActivityCategory; labelKey: string }[] = [
 ];
 
 const quickMinutes = [15, 25, 45, 60, 90];
+const PULSE_KEY = "kronos-log-pulse";
 
 export function QuickLog({
   onLogged,
@@ -29,6 +31,7 @@ export function QuickLog({
   onLogged?: () => void;
 }) {
   const { t } = useLocale();
+  const router = useRouter();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activityId, setActivityId] = useState<string>("");
   const [previousActivityId, setPreviousActivityId] = useState<string | null>(
@@ -108,6 +111,10 @@ export function QuickLog({
         });
         if (!res.ok) throw new Error("Time log failed");
 
+        const data = (await res.json()) as {
+          xpGains?: { name: string; xp: number }[];
+        };
+
         if (amount > 0) {
           const expenseRes = await fetch("/api/expenses", {
             method: "POST",
@@ -121,18 +128,22 @@ export function QuickLog({
           if (!expenseRes.ok) throw new Error("Expense failed");
         }
 
-        setMessage(
-          t("log.logged", {
-            minutes: durationMinutes,
-            name: selected?.name ?? "",
-          }),
-        );
-        setCash("");
-        setNote("");
-        setElapsed(0);
-        setRunning(false);
-        setPreviousActivityId(null);
+        try {
+          sessionStorage.setItem(
+            PULSE_KEY,
+            JSON.stringify({
+              minutes: durationMinutes,
+              xpGains: data.xpGains ?? [],
+              at: Date.now(),
+            }),
+          );
+        } catch {
+          /* ignore */
+        }
+
         onLogged?.();
+        router.push("/");
+        router.refresh();
       } catch {
         setMessage(t("log.error"));
       }
@@ -165,21 +176,20 @@ export function QuickLog({
                 onClick={() => selectActivity(activity.id)}
                 className={cn(
                   "min-h-14 rounded-2xl border px-3 py-3 text-left transition-all",
-                  active
-                    ? "border-transparent text-[var(--accent-ink)]"
-                    : "border-[var(--line)] bg-[var(--bg-elevated)] text-[var(--ink)]",
+                  active ? "chip-selected" : "chip-idle text-[var(--ink)]",
                 )}
-                style={active ? { background: activity.color } : undefined}
               >
-                <span className="block text-sm font-semibold leading-tight">
-                  {activity.name}
+                <span className="flex items-center gap-2">
+                  <span
+                    className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ background: activity.color }}
+                    aria-hidden
+                  />
+                  <span className="block text-sm font-semibold leading-tight">
+                    {activity.name}
+                  </span>
                 </span>
-                <span
-                  className={cn(
-                    "mt-1 block text-[10px] uppercase tracking-[0.14em]",
-                    active ? "text-black/60" : "text-[var(--muted)]",
-                  )}
-                >
+                <span className="mt-1 block pl-5 text-[10px] uppercase tracking-[0.14em] text-[var(--muted)]">
                   {t(`kind.${activity.kind}`)}
                 </span>
               </button>
@@ -207,9 +217,7 @@ export function QuickLog({
               onClick={() => setCategory(c.id)}
               className={cn(
                 "min-h-12 rounded-2xl border text-sm transition-colors",
-                category === c.id
-                  ? "border-[var(--accent)] bg-[var(--accent-dim)] text-[var(--accent)]"
-                  : "border-[var(--line)] bg-[var(--bg-elevated)] text-[var(--muted)]",
+                category === c.id ? "chip-selected" : "chip-idle",
               )}
             >
               {t(c.labelKey)}
@@ -229,9 +237,11 @@ export function QuickLog({
             className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--line)] px-3 text-sm text-[var(--ink)]"
           >
             {running ? <Pause size={14} /> : <Play size={14} />}
-            {running
-              ? `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`
-              : t("log.stopwatch")}
+            <span className="metric">
+              {running
+                ? `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`
+                : t("log.stopwatch")}
+            </span>
           </button>
         </div>
 
@@ -242,13 +252,11 @@ export function QuickLog({
               type="button"
               onClick={() => setMinutes(m)}
               className={cn(
-                "min-h-10 rounded-full px-3 text-sm",
-                minutes === m
-                  ? "accent-fill"
-                  : "bg-[var(--bg-soft)] text-[var(--muted)]",
+                "metric min-h-10 rounded-full border px-3 text-sm",
+                minutes === m ? "chip-selected" : "chip-idle",
               )}
             >
-              {m}m
+              {m} min
             </button>
           ))}
         </div>
@@ -261,7 +269,7 @@ export function QuickLog({
             max={1440}
             value={minutes}
             onChange={(e) => setMinutes(Number(e.target.value) || 1)}
-            className="min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg)] px-4 text-[var(--ink)] outline-none focus:border-[var(--accent)]"
+            className="metric min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg)] px-4 text-[var(--ink)] outline-none focus:border-[var(--ink)]"
           />
         </label>
       </section>
@@ -278,7 +286,7 @@ export function QuickLog({
             placeholder="0"
             value={cash}
             onChange={(e) => setCash(e.target.value)}
-            className="min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] px-4 text-[var(--ink)] outline-none focus:border-[var(--accent)]"
+            className="metric min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] px-4 text-[var(--ink)] outline-none focus:border-[var(--ink)]"
           />
         </label>
         <label className="block">
@@ -290,7 +298,7 @@ export function QuickLog({
             placeholder={t("log.notePlaceholder")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] px-4 text-[var(--ink)] outline-none focus:border-[var(--accent)]"
+            className="min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] px-4 text-[var(--ink)] outline-none focus:border-[var(--ink)]"
           />
         </label>
       </section>
@@ -306,7 +314,7 @@ export function QuickLog({
       </button>
 
       {message && (
-        <p className="text-center text-sm text-[var(--muted)]">{message}</p>
+        <p className="text-center text-sm text-[var(--danger)]">{message}</p>
       )}
     </div>
   );

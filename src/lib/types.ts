@@ -53,6 +53,10 @@ export type BurnoutStatus = {
   messageKey: "burnout.none" | "burnout.ok" | "burnout.watch" | "burnout.critical";
   rechargePercentOfDeep: number;
   thresholdPercent: number;
+  /** Minutes of recharge still needed to clear the floor. */
+  deficitMinutes: number;
+  /** Minutes of recharge required at the threshold (deep × threshold%). */
+  neededMinutes: number;
 };
 
 export type SkillProgress = {

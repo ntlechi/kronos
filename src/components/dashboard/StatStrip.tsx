@@ -1,55 +1,141 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { formatHours, formatMoney } from "@/lib/aggregations";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { DashboardSummary } from "@/lib/types";
+import { cn } from "@/lib/cn";
 
-export function StatStrip({ summary }: { summary: DashboardSummary }) {
+function useCountUp(target: number, enabled: boolean, durationMs = 400) {
+  const [value, setValue] = useState(enabled ? 0 : target);
+
+  useEffect(() => {
+    if (!enabled) {
+      setValue(target);
+      return;
+    }
+    let frame = 0;
+    const start = performance.now();
+    const from = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / durationMs);
+      const eased = 1 - (1 - t) ** 3;
+      setValue(Math.round(from + (target - from) * eased));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [target, enabled, durationMs]);
+
+  return value;
+}
+
+export function StatStrip({
+  summary,
+  animate = false,
+}: {
+  summary: DashboardSummary;
+  animate?: boolean;
+}) {
   const { t } = useLocale();
+  const focusTotal = summary.deepMinutes + summary.shallowMinutes;
+  const deepShare =
+    focusTotal > 0 ? Math.round((summary.deepMinutes / focusTotal) * 100) : 0;
+  const shallowShare = focusTotal > 0 ? 100 - deepShare : 0;
 
-  const items = [
+  const animatedTotal = useCountUp(summary.totalMinutes, animate);
+  const animatedCash = useCountUp(summary.totalExpenseCents, animate);
+  const animatedSwitches = useCountUp(summary.contextSwitches, animate);
+
+  const secondary = [
     {
       id: "work",
       label: t("stat.totalWork"),
-      value: formatHours(summary.totalMinutes),
-      hint: t("stat.totalWorkHint", { hours: summary.totalHours }),
+      value: formatHours(animatedTotal),
     },
     {
       id: "cash",
       label: t("stat.capitalOut"),
-      value: formatMoney(summary.totalExpenseCents),
-      hint: t("stat.capitalHint"),
-    },
-    {
-      id: "deep",
-      label: t("stat.deepShallow"),
-      value: `${formatHours(summary.deepMinutes)} / ${formatHours(summary.shallowMinutes)}`,
-      hint: t("stat.deepShallowHint"),
+      value: formatMoney(animatedCash),
     },
     {
       id: "switches",
       label: t("stat.switches"),
-      value: String(summary.contextSwitches),
-      hint: t("stat.switchesHint"),
+      value: String(animatedSwitches),
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {items.map((item) => (
+    <div className="space-y-3">
+      <article className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-4 py-5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+          {t("stat.deepShallow")}
+        </p>
+
+        {focusTotal === 0 ? (
+          <p className="metric mt-3 text-4xl font-semibold text-[var(--muted)] sm:text-5xl">
+            —
+          </p>
+        ) : (
+          <p className="metric mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
+            {t("stat.deepPercent", { percent: deepShare })}
+          </p>
+        )}
+
         <div
-          key={item.id}
-          className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-4 py-4"
+          className="mt-4 flex h-3 overflow-hidden rounded-full bg-[var(--bg-soft)]"
+          role="img"
+          aria-label={t("stat.deepShallow")}
         >
-          <p className="text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
-            {item.label}
-          </p>
-          <p className="mt-2 font-[family-name:var(--font-syne)] text-2xl font-semibold tracking-tight tabular-nums">
-            {item.value}
-          </p>
-          <p className="mt-1 text-xs text-[var(--muted)]">{item.hint}</p>
+          {focusTotal === 0 ? (
+            <div className="h-full w-full border border-dashed border-[var(--line)]" />
+          ) : (
+            <>
+              <div
+                className="h-full bg-[var(--ink)] transition-[width] duration-400 ease-out"
+                style={{ width: `${deepShare}%` }}
+              />
+              <div
+                className="h-full bg-[var(--muted)]/40 transition-[width] duration-400 ease-out"
+                style={{ width: `${shallowShare}%` }}
+              />
+            </>
+          )}
         </div>
-      ))}
+
+        <div className="mt-3 flex justify-between text-xs text-[var(--muted)]">
+          <span>
+            {t("stat.deepLabel")}{" "}
+            <span className="metric text-[var(--ink)]">
+              {formatHours(summary.deepMinutes)}
+            </span>
+          </span>
+          <span>
+            {t("stat.shallowLabel")}{" "}
+            <span className="metric text-[var(--ink)]">
+              {formatHours(summary.shallowMinutes)}
+            </span>
+          </span>
+        </div>
+      </article>
+
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        {secondary.map((item) => (
+          <div
+            key={item.id}
+            className={cn(
+              "rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-3 py-3 sm:px-4 sm:py-4",
+            )}
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[11px]">
+              {item.label}
+            </p>
+            <p className="metric mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+              {item.value}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

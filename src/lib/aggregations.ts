@@ -156,12 +156,14 @@ export function buildDashboardSummary(input: {
   };
 }
 
+/** Metric-safe duration: spaced units so 0 never reads as "o"/"O". */
 export function formatHours(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (h === 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
+  const total = Math.max(0, Math.round(minutes));
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h} h`;
+  return `${h} h ${m} min`;
 }
 
 export function formatMoney(cents: number, currency = "CAD"): string {

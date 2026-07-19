@@ -94,6 +94,7 @@ export async function POST(request: Request) {
     });
 
     const xp = xpForMinutes(body.durationMinutes, body.category);
+    const xpGains: { id: string; name: string; xp: number }[] = [];
     for (const skillId of skillIds) {
       const skill = await tx.skill.findFirst({
         where: { id: skillId, tenantId },
@@ -115,10 +116,15 @@ export async function POST(request: Request) {
           xpGained: xp,
         },
       });
+
+      xpGains.push({ id: skill.id, name: skill.name, xp });
     }
 
-    return timeLog;
+    return { timeLog, xpGains };
   });
 
-  return NextResponse.json({ log: result }, { status: 201 });
+  return NextResponse.json(
+    { log: result.timeLog, xpGains: result.xpGains },
+    { status: 201 },
+  );
 }

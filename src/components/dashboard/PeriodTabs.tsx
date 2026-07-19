@@ -30,7 +30,7 @@ export function PeriodTabs({
           className={cn(
             "min-h-10 rounded-full px-4 text-sm font-semibold transition-colors",
             value === p.id
-              ? "accent-fill"
+              ? "bg-[var(--bg-soft)] text-[var(--ink)]"
               : "text-[var(--muted)] hover:text-[var(--ink)]",
           )}
         >

@@ -37,6 +37,7 @@ const en: Dict = {
   "dashboard.skillsFolded": "Tap to expand skills",
   "dashboard.emptyBreakdown":
     "No activities yet. Add brands under Activities, then log time.",
+  "dashboard.gaugeGhost": "Log 25 min to activate",
 
   "stat.totalWork": "Total time",
   "stat.totalWorkHint": "{hours}h logged",
@@ -44,13 +45,21 @@ const en: Dict = {
   "stat.capitalHint": "Money you entered on logs",
   "stat.deepShallow": "Deep / Shallow",
   "stat.deepShallowHint": "Focus vs ops",
+  "stat.deepPercent": "{percent}% deep",
+  "stat.deepLabel": "Deep",
+  "stat.shallowLabel": "Shallow",
   "stat.switches": "Switches",
   "stat.switchesHint": "Brain context flips",
 
   "burnout.title": "Burnout floor",
+  "burnout.capacity": "Capacity",
+  "burnout.capacityValue": "{percent}% recharge vs deep",
+  "burnout.capacityIdle": "Not armed",
+  "burnout.thresholdTick": "Floor {percent}%",
   "burnout.ratio": "{percent}% recharge / deep",
+  "burnout.breach": "{amount} below the recharge floor this period",
   "burnout.none":
-    "No deep work logged yet — room to build without pressure.",
+    "Log deep work to arm the capacity meter — no pressure yet.",
   "burnout.critical":
     "Recharge is critically low vs deep work. Dance, sport, or social — protect the operator.",
   "burnout.watch":
@@ -84,7 +93,9 @@ const en: Dict = {
   "log.notePlaceholder": "Optional",
   "log.submit": "Log session",
   "log.saving": "Saving…",
-  "log.logged": "Logged {minutes}m on {name}",
+  "log.logged": "Logged {minutes} min on {name}",
+  "log.pulseConfirm": "Logged {minutes} min",
+  "log.xpGain": "+{xp} XP · {name}",
   "log.error": "Could not save. Check the API / database.",
   "log.loadError": "Could not load activities. Seed the DB first.",
   "log.skillsHint": "Skills that will gain XP",
@@ -224,6 +235,7 @@ const fr: Dict = {
   "dashboard.skillsFolded": "Touche pour ouvrir les compétences",
   "dashboard.emptyBreakdown":
     "Aucune activité. Ajoute des marques sous Activités, puis journalise du temps.",
+  "dashboard.gaugeGhost": "Journalise 25 min pour activer",
 
   "stat.totalWork": "Temps total",
   "stat.totalWorkHint": "{hours}h journalisées",
@@ -231,13 +243,21 @@ const fr: Dict = {
   "stat.capitalHint": "Montants que tu as saisis",
   "stat.deepShallow": "Profond / Léger",
   "stat.deepShallowHint": "Focus vs ops",
+  "stat.deepPercent": "{percent}% profond",
+  "stat.deepLabel": "Profond",
+  "stat.shallowLabel": "Léger",
   "stat.switches": "Changements",
   "stat.switchesHint": "Changements de contexte",
 
   "burnout.title": "Seuil burnout",
+  "burnout.capacity": "Capacité",
+  "burnout.capacityValue": "{percent}% recharge vs profond",
+  "burnout.capacityIdle": "Non armé",
+  "burnout.thresholdTick": "Seuil {percent}%",
   "burnout.ratio": "{percent}% recharge / profond",
+  "burnout.breach": "{amount} sous le seuil de recharge cette période",
   "burnout.none":
-    "Pas encore de travail profond — de la place pour construire sans pression.",
+    "Journalise du travail profond pour armer le compteur — aucune pression encore.",
   "burnout.critical":
     "Recharge critique vs travail profond. Danse, sport ou social — protège l'opérateur.",
   "burnout.watch":
@@ -272,6 +292,8 @@ const fr: Dict = {
   "log.submit": "Journaliser",
   "log.saving": "Enregistrement…",
   "log.logged": "{minutes} min journalisées sur {name}",
+  "log.pulseConfirm": "{minutes} min journalisées",
+  "log.xpGain": "+{xp} XP · {name}",
   "log.error": "Impossible d'enregistrer. Vérifie l'API / la base.",
   "log.loadError": "Impossible de charger les activités. Seed la DB d'abord.",
   "log.skillsHint": "Compétences qui gagneront de l'XP",

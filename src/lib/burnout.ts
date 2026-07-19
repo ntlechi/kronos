@@ -7,32 +7,45 @@ export function evaluateBurnout(
   deepMinutes: number,
   rechargeMinutes: number,
 ): BurnoutStatus {
+  const thresholdPercent = RECHARGE_THRESHOLD_PERCENT;
+  const neededMinutes =
+    deepMinutes > 0
+      ? Math.ceil((deepMinutes * thresholdPercent) / 100)
+      : 0;
+  const deficitMinutes = Math.max(0, neededMinutes - rechargeMinutes);
+
   if (deepMinutes <= 0) {
     return {
       level: "ok",
       messageKey: "burnout.none",
       rechargePercentOfDeep: 100,
-      thresholdPercent: RECHARGE_THRESHOLD_PERCENT,
+      thresholdPercent,
+      deficitMinutes: 0,
+      neededMinutes: 0,
     };
   }
 
   const rechargePercentOfDeep = (rechargeMinutes / deepMinutes) * 100;
 
-  if (rechargePercentOfDeep < RECHARGE_THRESHOLD_PERCENT * 0.5) {
+  if (rechargePercentOfDeep < thresholdPercent * 0.5) {
     return {
       level: "critical",
       messageKey: "burnout.critical",
       rechargePercentOfDeep,
-      thresholdPercent: RECHARGE_THRESHOLD_PERCENT,
+      thresholdPercent,
+      deficitMinutes,
+      neededMinutes,
     };
   }
 
-  if (rechargePercentOfDeep < RECHARGE_THRESHOLD_PERCENT) {
+  if (rechargePercentOfDeep < thresholdPercent) {
     return {
       level: "watch",
       messageKey: "burnout.watch",
       rechargePercentOfDeep,
-      thresholdPercent: RECHARGE_THRESHOLD_PERCENT,
+      thresholdPercent,
+      deficitMinutes,
+      neededMinutes,
     };
   }
 
@@ -40,6 +53,8 @@ export function evaluateBurnout(
     level: "ok",
     messageKey: "burnout.ok",
     rechargePercentOfDeep,
-    thresholdPercent: RECHARGE_THRESHOLD_PERCENT,
+    thresholdPercent,
+    deficitMinutes: 0,
+    neededMinutes,
   };
 }
