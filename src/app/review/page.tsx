@@ -1,20 +1,20 @@
 "use client";
 
-import { FocusRunner } from "@/components/focus/FocusRunner";
+import { WeeklyReviewClient } from "@/components/review/WeeklyReviewClient";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
-export default function PomodoroPage() {
+export default function ReviewPage() {
   const { t } = useLocale();
 
   return (
     <div className="space-y-4">
       <div>
         <h1 className="font-[family-name:var(--font-syne)] text-2xl font-semibold">
-          {t("focus.title")}
+          {t("review.title")}
         </h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">{t("focus.subtitle")}</p>
+        <p className="mt-1 text-sm text-[var(--muted)]">{t("review.subtitle")}</p>
       </div>
-      <FocusRunner />
+      <WeeklyReviewClient />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ActivityTimeGauges } from "@/components/dashboard/ActivityTimeGauges";
 import { BurnoutBanner } from "@/components/dashboard/BurnoutBanner";
 import { FoldableSkills } from "@/components/dashboard/FoldableSkills";
@@ -95,6 +96,12 @@ export function DashboardClient({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PeriodTabs value={period} onChange={setPeriod} />
+        <Link
+          href="/review"
+          className="inline-flex min-h-11 items-center rounded-full border border-[var(--line)] bg-[var(--bg-elevated)] px-4 text-sm font-medium text-[var(--ink)]"
+        >
+          {t("review.open")}
+        </Link>
       </div>
 
       {toast && (

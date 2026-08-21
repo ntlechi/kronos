@@ -101,22 +101,59 @@ const en: Dict = {
   "log.skillsHint": "Skills that will gain XP",
   "log.skillsNone": "No skills linked — associate them under Skills.",
 
-  "focus.title": "Focus timer",
+  "focus.title": "Focus Runner",
   "focus.subtitle":
-    "Adjustable pomodoro. Completed focus blocks auto-log as Deep Work.",
+    "One activity. Fullscreen deep work. Brown noise optional. Auto-logs when you finish.",
   "focus.phase.focus": "Focus",
   "focus.phase.break": "Break",
   "focus.cycle": "cycle {cycle}",
   "focus.start": "Start",
+  "focus.startRunner": "Enter focus",
+  "focus.resume": "Resume",
   "focus.pause": "Pause",
   "focus.reset": "Reset",
-  "focus.logTo": "Log focus to",
+  "focus.endLog": "End & log",
+  "focus.abort": "Exit without logging",
+  "focus.enterFullscreen": "Fullscreen",
+  "focus.exitFullscreen": "Exit fullscreen",
+  "focus.soundOn": "Sound on",
+  "focus.soundOff": "Sound off",
+  "focus.duration": "Duration",
+  "focus.runnerHint":
+    "Starts fullscreen. Session auto-logs as Deep Work to the selected activity.",
+  "focus.logTo": "Focus on",
   "focus.focusMin": "Focus (min)",
   "focus.breakMin": "Break (min)",
   "focus.longBreak": "Long break",
   "focus.cyclesLong": "Cycles → long",
   "focus.syncing": "Syncing…",
-  "focus.logged": "Focus block logged · {minutes}m",
+  "focus.logged": "Focus block logged · {minutes} min",
+
+  "review.title": "Weekly review",
+  "review.subtitle":
+    "Friday pulse check — deep vs shallow, capacity, and where your brands ate the week.",
+  "review.loading": "Building your week…",
+  "review.error": "Could not load the weekly review.",
+  "review.verdict": "Operator verdict",
+  "review.brandsTitle": "Time by brand",
+  "review.brandsEmpty": "No time logged this week yet.",
+  "review.topBrand": "Top focus: {name} ({percent}%)",
+  "review.rechargeLabel": "Recharge",
+  "review.ctaFocus": "Start Focus Runner",
+  "review.ctaLog": "Quick log",
+  "review.open": "Weekly review",
+  "review.insight.empty":
+    "Quiet week so far — log a few sessions to unlock your operator readout.",
+  "review.insight.overheat":
+    "Capacity breached: {amount} below the recharge floor. Protect the operator before next sprint.",
+  "review.insight.scatter":
+    "Attention split across {count} activities — pick 1–3 axes and cut the rest.",
+  "review.insight.shallow":
+    "Only {percent}% deep work vs shallow — protect longer focus blocks.",
+  "review.insight.focused":
+    "Strong concentration: {name} took {percent}% of logged time. Keep the lane.",
+  "review.insight.balanced":
+    "Healthy mix this week. Hold the 80/20 floor and keep logging.",
 
   "activities.title": "Activities",
   "activities.subtitle":
@@ -300,22 +337,59 @@ const fr: Dict = {
   "log.skillsNone":
     "Aucune compétence liée — associe-les sous Compétences.",
 
-  "focus.title": "Minuteur focus",
+  "focus.title": "Focus Runner",
   "focus.subtitle":
-    "Pomodoro ajustable. Les blocs focus terminés se journalisent en travail profond.",
+    "Une activité. Deep work plein écran. Bruit brun optionnel. Journalisation auto à la fin.",
   "focus.phase.focus": "Focus",
   "focus.phase.break": "Pause",
   "focus.cycle": "cycle {cycle}",
   "focus.start": "Démarrer",
+  "focus.startRunner": "Entrer en focus",
+  "focus.resume": "Reprendre",
   "focus.pause": "Pause",
   "focus.reset": "Réinitialiser",
-  "focus.logTo": "Journaliser le focus sur",
+  "focus.endLog": "Terminer & journaliser",
+  "focus.abort": "Quitter sans journaliser",
+  "focus.enterFullscreen": "Plein écran",
+  "focus.exitFullscreen": "Quitter le plein écran",
+  "focus.soundOn": "Son activé",
+  "focus.soundOff": "Son coupé",
+  "focus.duration": "Durée",
+  "focus.runnerHint":
+    "Démarre en plein écran. La session se journalise en Deep Work sur l'activité choisie.",
+  "focus.logTo": "Focus sur",
   "focus.focusMin": "Focus (min)",
   "focus.breakMin": "Pause (min)",
   "focus.longBreak": "Longue pause",
   "focus.cyclesLong": "Cycles → longue",
   "focus.syncing": "Sync…",
   "focus.logged": "Bloc focus journalisé · {minutes} min",
+
+  "review.title": "Bilan hebdo",
+  "review.subtitle":
+    "Check du vendredi — profond vs léger, capacité, et quelles marques ont mangé la semaine.",
+  "review.loading": "Construction de ta semaine…",
+  "review.error": "Impossible de charger le bilan hebdo.",
+  "review.verdict": "Verdict opérateur",
+  "review.brandsTitle": "Temps par marque",
+  "review.brandsEmpty": "Aucun temps journalisé cette semaine.",
+  "review.topBrand": "Focus principal : {name} ({percent}%)",
+  "review.rechargeLabel": "Recharge",
+  "review.ctaFocus": "Lancer Focus Runner",
+  "review.ctaLog": "Journal rapide",
+  "review.open": "Bilan hebdo",
+  "review.insight.empty":
+    "Semaine encore calme — journalise quelques sessions pour débloquer le readout.",
+  "review.insight.overheat":
+    "Capacité dépassée : {amount} sous le seuil de recharge. Protège l'opérateur avant le prochain sprint.",
+  "review.insight.scatter":
+    "Attention éclatée sur {count} activités — garde 1–3 axes et coupe le reste.",
+  "review.insight.shallow":
+    "Seulement {percent}% de travail profond vs léger — protège de plus longs blocs focus.",
+  "review.insight.focused":
+    "Forte concentration : {name} a pris {percent}% du temps. Garde la voie.",
+  "review.insight.balanced":
+    "Bon équilibre cette semaine. Tiens le plancher 80/20 et continue de journaliser.",
 
   "activities.title": "Activités",
   "activities.subtitle":
