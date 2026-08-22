@@ -36,6 +36,7 @@ model Tenant {
   expenseLogs     ExpenseLog[]
   contextSwitches ContextSwitch[]
   pomodoroPrefs   PomodoroPrefs?
+  seasons         Season[]
 }
 
 model TenantMember {
@@ -70,6 +71,7 @@ model Project {
   skillLinks      ProjectSkill[]
   switchesFrom    ContextSwitch[]  @relation("SwitchFrom")
   switchesTo      ContextSwitch[]  @relation("SwitchTo")
+  seasonPriorities SeasonPriority[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, isActive])
@@ -177,4 +179,36 @@ model PomodoroPrefs {
   longBreakMinutes Int @default(15)
   cyclesBeforeLong Int @default(4)
   tenant        Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+/// Light 12-week planning frame — max 3 priorities, not a task OS.
+model Season {
+  id          String           @id @default(cuid())
+  tenantId    String
+  name        String
+  startsAt    DateTime
+  endsAt      DateTime
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  priorities  SeasonPriority[]
+
+  @@index([tenantId, isActive])
+}
+
+model SeasonPriority {
+  id        String   @id @default(cuid())
+  seasonId  String
+  title     String
+  sortOrder Int      @default(0)
+  /// Optional link to an activity/brand for time attribution
+  projectId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([seasonId])
+  @@index([projectId])
 }

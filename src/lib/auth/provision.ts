@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { hashPassword } from "@/lib/auth/password";
+import { defaultSeasonName, defaultSeasonWindow } from "@/lib/season";
 
 const STARTER_SKILLS = [
   { name: "Frontend Engineering", slug: "frontend-engineering" },
@@ -59,6 +60,17 @@ export async function provisionWorkspace(input: {
 
     await tx.pomodoroPrefs.create({
       data: { tenantId: tenant.id },
+    });
+
+    const window = defaultSeasonWindow();
+    await tx.season.create({
+      data: {
+        tenantId: tenant.id,
+        name: defaultSeasonName(),
+        startsAt: window.startsAt,
+        endsAt: window.endsAt,
+        isActive: true,
+      },
     });
 
     for (const skill of STARTER_SKILLS) {

@@ -18,6 +18,19 @@ export type WeeklyReviewModel = {
   topBrand: { name: string; percent: number } | null;
   activeBrands: number;
   insight: ReviewInsight;
+  season?: {
+    id: string;
+    name: string;
+    priorities: {
+      id: string;
+      title: string;
+      projectId: string | null;
+      projectName: string | null;
+      color: string | null;
+      minutes: number;
+      percentOfTotal: number;
+    }[];
+  } | null;
 };
 
 export function buildWeeklyReview(

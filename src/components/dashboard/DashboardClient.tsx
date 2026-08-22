@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { OnboardingQuest } from "@/components/onboarding/OnboardingQuest";
 import { ActivityTimeGauges } from "@/components/dashboard/ActivityTimeGauges";
 import { BurnoutBanner } from "@/components/dashboard/BurnoutBanner";
 import { FoldableSkills } from "@/components/dashboard/FoldableSkills";
@@ -122,6 +123,7 @@ export function DashboardClient({
 
       {summary && (
         <>
+          <OnboardingQuest />
           <StatStrip summary={summary} animate={animatePulse} />
           <BurnoutBanner
             status={summary.burnout}
@@ -133,9 +135,17 @@ export function DashboardClient({
               <h2 className="font-[family-name:var(--font-syne)] text-xl font-semibold">
                 {t("dashboard.breakdownTitle")}
               </h2>
-              <p className="text-xs text-[var(--muted)]">
-                {t("dashboard.breakdownHint")}
-              </p>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/season"
+                  className="text-xs font-medium text-[var(--muted)] underline decoration-[var(--line)] underline-offset-4"
+                >
+                  {t("season.open")}
+                </Link>
+                <p className="text-xs text-[var(--muted)]">
+                  {t("dashboard.breakdownHint")}
+                </p>
+              </div>
             </div>
             <ActivityTimeGauges
               activities={summary.projects}

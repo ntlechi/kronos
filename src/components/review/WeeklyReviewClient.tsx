@@ -44,7 +44,7 @@ export function WeeklyReviewClient() {
     );
   }
 
-  const { summary, deepShare, topBrand, insight } = review;
+  const { summary, deepShare, topBrand, insight, season } = review;
   const focusTotal = summary.deepMinutes + summary.shallowMinutes;
 
   return (
@@ -70,6 +70,62 @@ export function WeeklyReviewClient() {
             : t(insight.key, insight.vars)}
         </p>
       </div>
+
+      {season && season.priorities.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-end justify-between gap-3">
+            <h2 className="font-[family-name:var(--font-syne)] text-xl font-semibold">
+              {t("review.seasonTitle", { name: season.name })}
+            </h2>
+            <Link
+              href="/season"
+              className="text-xs font-medium text-[var(--muted)] underline decoration-[var(--line)] underline-offset-4"
+            >
+              {t("season.edit")}
+            </Link>
+          </div>
+          <ul className="space-y-2">
+            {season.priorities.map((p) => (
+              <li
+                key={p.id}
+                className="flex items-center gap-3 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-3 py-3"
+              >
+                <span
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{ background: p.color ?? "var(--muted)" }}
+                  aria-hidden
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{p.title}</p>
+                  <p className="text-xs text-[var(--muted)]">
+                    {p.projectName
+                      ? t("review.seasonLinked", { name: p.projectName })
+                      : t("review.seasonUnlinked")}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="metric text-sm font-semibold">
+                    {formatHours(p.minutes)}
+                  </p>
+                  <p className="metric text-xs text-[var(--muted)]">
+                    {Math.round(p.percentOfTotal)}%
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-[var(--muted)]">{t("review.seasonHint")}</p>
+        </section>
+      )}
+
+      {!season?.priorities?.length && (
+        <Link
+          href="/season"
+          className="block rounded-[var(--radius)] border border-dashed border-[var(--line)] px-4 py-4 text-sm text-[var(--muted)]"
+        >
+          {t("review.seasonEmpty")}
+        </Link>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Metric
