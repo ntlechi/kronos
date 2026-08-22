@@ -15,6 +15,7 @@ const en: Dict = {
   "nav.focus": "Focus",
   "nav.activities": "Activities",
   "nav.skills": "Skills",
+  "nav.pricing": "Pricing",
 
   "period.day": "Day",
   "period.week": "Week",
@@ -103,7 +104,7 @@ const en: Dict = {
 
   "focus.title": "Focus Runner",
   "focus.subtitle":
-    "One activity. Fullscreen deep work. Brown noise optional. Auto-logs when you finish.",
+    "One activity. Fullscreen deep work. Optional ambient sound. Auto-logs when you finish.",
   "focus.phase.focus": "Focus",
   "focus.phase.break": "Break",
   "focus.cycle": "cycle {cycle}",
@@ -118,6 +119,12 @@ const en: Dict = {
   "focus.exitFullscreen": "Exit fullscreen",
   "focus.soundOn": "Sound on",
   "focus.soundOff": "Sound off",
+  "focus.ambient.label": "Ambient sound",
+  "focus.ambient.brown": "Brown noise",
+  "focus.ambient.cafe": "Café",
+  "focus.ambient.airport": "Airport",
+  "focus.ambient.fan": "Fan",
+  "focus.ambient.classical": "Classical",
   "focus.duration": "Duration",
   "focus.runnerHint":
     "Starts fullscreen. Session auto-logs as Deep Work to the selected activity.",
@@ -277,6 +284,52 @@ const en: Dict = {
   "auth.error.signInAfterRegister":
     "Account created, but sign-in failed. Try logging in.",
   "auth.signOut": "Sign out",
+
+  "plan.free": "Free",
+  "plan.pro": "Pro",
+  "plan.badge.free": "Free",
+  "plan.badge.pro": "Pro",
+  "plan.upgrade": "See Pro",
+  "plan.teaser":
+    "Unlimited history, seasons, and capital tracking — Stripe checkout coming soon.",
+  "plan.limit.activities": "Free includes 6 activities. Upgrade for unlimited brands.",
+  "plan.limit.skills": "Free includes 8 skills. Upgrade to compound more.",
+  "plan.limit.history": "Free Pulse looks back 30 days. Year view is Pro.",
+  "plan.limit.capital": "Cash and time-as-capital is a Pro feature.",
+  "plan.limit.seasons": "12-week seasons are Pro — plan which brands get the season.",
+  "plan.limit.year": "Year history is Pro.",
+  "plan.limit.rate": "Hourly rates are Pro.",
+
+  "pricing.kicker": "Plans",
+  "pricing.title": "Free operator loop. Pro for memory and money.",
+  "pricing.subtitle":
+    "The timer is easy to copy. Kronos is the habit plus your history. Stripe checkout is coming — start free now.",
+  "pricing.freeName": "Free",
+  "pricing.proName": "Pro",
+  "pricing.freePrice": "$0",
+  "pricing.freeHint": "Core loop. One workspace. Enough for a solo operator.",
+  "pricing.proHint": "Seasons, capital, and full history when Stripe lands.",
+  "pricing.ctaFree": "Create a free workspace",
+  "pricing.ctaStayFree": "Back to Pulse",
+  "pricing.ctaSoon": "Checkout coming soon",
+  "pricing.stripeSoon": "Stripe billing is next. No charge today.",
+  "pricing.feat.pulse": "Pulse dashboard + burnout floor",
+  "pricing.feat.log": "Quick log + Focus Runner",
+  "pricing.feat.focus": "Ambient sounds, offline PWA",
+  "pricing.feat.burnout": "20% recharge floor",
+  "pricing.feat.activities6": "Up to 6 activities",
+  "pricing.feat.skills8": "Up to 8 skills",
+  "pricing.feat.history30": "30-day history",
+  "pricing.feat.reviewWeek": "This week's review",
+  "pricing.feat.unlimited": "Unlimited activities & skills",
+  "pricing.feat.year": "Year + full history",
+  "pricing.feat.seasons": "12-week seasons (3 priorities)",
+  "pricing.feat.capital": "Cash logs + capital view",
+  "pricing.feat.rate": "Hourly rate → time value",
+  "pricing.feat.exportSoon": "Export (coming with Stripe)",
+  "pricing.feat.stripeSoon": "Pay with Stripe — not live yet",
+  "pricing.toolsLead":
+    "Shipping first as a free tool from Arsitech, with a Survive Backpacking edition next.",
 };
 
 const fr: Dict = {
@@ -288,6 +341,7 @@ const fr: Dict = {
   "nav.focus": "Focus",
   "nav.activities": "Activités",
   "nav.skills": "Compétences",
+  "nav.pricing": "Tarifs",
 
   "period.day": "Jour",
   "period.week": "Semaine",
@@ -377,7 +431,7 @@ const fr: Dict = {
 
   "focus.title": "Focus Runner",
   "focus.subtitle":
-    "Une activité. Deep work plein écran. Bruit brun optionnel. Journalisation auto à la fin.",
+    "Une activité. Deep work plein écran. Ambiance sonore optionnelle. Journalisation auto à la fin.",
   "focus.phase.focus": "Focus",
   "focus.phase.break": "Pause",
   "focus.cycle": "cycle {cycle}",
@@ -392,6 +446,12 @@ const fr: Dict = {
   "focus.exitFullscreen": "Quitter le plein écran",
   "focus.soundOn": "Son activé",
   "focus.soundOff": "Son coupé",
+  "focus.ambient.label": "Ambiance sonore",
+  "focus.ambient.brown": "Bruit brun",
+  "focus.ambient.cafe": "Café",
+  "focus.ambient.airport": "Aéroport",
+  "focus.ambient.fan": "Ventilateur",
+  "focus.ambient.classical": "Classique",
   "focus.duration": "Durée",
   "focus.runnerHint":
     "Démarre en plein écran. La session se journalise en Deep Work sur l'activité choisie.",
@@ -555,6 +615,52 @@ const fr: Dict = {
   "auth.error.signInAfterRegister":
     "Compte créé, mais la connexion a échoué. Essaie de te connecter.",
   "auth.signOut": "Se déconnecter",
+
+  "plan.free": "Gratuit",
+  "plan.pro": "Pro",
+  "plan.badge.free": "Gratuit",
+  "plan.badge.pro": "Pro",
+  "plan.upgrade": "Voir Pro",
+  "plan.teaser":
+    "Historique illimité, saisons et capital — le paiement Stripe arrive bientôt.",
+  "plan.limit.activities": "Le gratuit inclut 6 activités. Passe à Pro pour plus de marques.",
+  "plan.limit.skills": "Le gratuit inclut 8 compétences.",
+  "plan.limit.history": "Le Pulse gratuit remonte 30 jours. L'année est Pro.",
+  "plan.limit.capital": "Le cash et le capital-temps sont Pro.",
+  "plan.limit.seasons": "Les saisons de 12 semaines sont Pro.",
+  "plan.limit.year": "L'historique annuel est Pro.",
+  "plan.limit.rate": "Les taux horaires sont Pro.",
+
+  "pricing.kicker": "Offres",
+  "pricing.title": "Boucle gratuite. Pro pour la mémoire et l'argent.",
+  "pricing.subtitle":
+    "Le minuteur se copie. Kronos, c'est l'habitude plus ton historique. Stripe arrive — commence gratuit.",
+  "pricing.freeName": "Gratuit",
+  "pricing.proName": "Pro",
+  "pricing.freePrice": "0 $",
+  "pricing.freeHint": "La boucle cœur. Un espace. Assez pour un opérateur solo.",
+  "pricing.proHint": "Saisons, capital et historique complet quand Stripe sera là.",
+  "pricing.ctaFree": "Créer un espace gratuit",
+  "pricing.ctaStayFree": "Retour au Pulse",
+  "pricing.ctaSoon": "Paiement bientôt",
+  "pricing.stripeSoon": "La facturation Stripe est la prochaine étape. Rien à payer aujourd'hui.",
+  "pricing.feat.pulse": "Pulse + seuil burnout",
+  "pricing.feat.log": "Journal rapide + Focus Runner",
+  "pricing.feat.focus": "Ambiances sonores, PWA hors-ligne",
+  "pricing.feat.burnout": "Plancher 20% recharge",
+  "pricing.feat.activities6": "Jusqu'à 6 activités",
+  "pricing.feat.skills8": "Jusqu'à 8 compétences",
+  "pricing.feat.history30": "Historique 30 jours",
+  "pricing.feat.reviewWeek": "Bilan de la semaine",
+  "pricing.feat.unlimited": "Activités et compétences illimitées",
+  "pricing.feat.year": "Année + historique complet",
+  "pricing.feat.seasons": "Saisons 12 semaines (3 priorités)",
+  "pricing.feat.capital": "Cash + vue capital",
+  "pricing.feat.rate": "Taux horaire → valeur temps",
+  "pricing.feat.exportSoon": "Export (avec Stripe)",
+  "pricing.feat.stripeSoon": "Payer avec Stripe — pas encore en ligne",
+  "pricing.toolsLead":
+    "D'abord un outil gratuit via Arsitech, puis une édition Survive Backpacking.",
 };
 
 const dictionaries: Record<Locale, Dict> = { en, fr };

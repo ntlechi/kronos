@@ -224,6 +224,7 @@ function AuthCard({
   footer: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const { t } = useLocale();
   return (
     <div className="mx-auto flex w-full max-w-md flex-col justify-center py-8">
       <div className="mb-8 text-center">
@@ -237,6 +238,11 @@ function AuthCard({
         {children}
       </div>
       <p className="mt-5 text-center text-sm text-[var(--muted)]">{footer}</p>
+      <p className="mt-3 text-center text-xs text-[var(--muted)]">
+        <Link href="/pricing" className="underline underline-offset-4">
+          {t("nav.pricing")}
+        </Link>
+      </p>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   defaultSeasonWindow,
   MAX_SEASON_PRIORITIES,
 } from "@/lib/season";
+import { requirePro } from "@/lib/billing/enforce";
 import { getTenantContext } from "@/lib/tenant";
 
 const prioritySchema = z.object({
@@ -37,7 +38,7 @@ export async function GET() {
     orderBy: { startsAt: "desc" },
   });
 
-  if (!season) {
+  if (!season && ctx.planSnapshot.features.seasons) {
     const window = defaultSeasonWindow();
     season = await prisma.season.create({
       data: {
@@ -58,13 +59,20 @@ export async function GET() {
     });
   }
 
-  return NextResponse.json({ season });
+  return NextResponse.json({ season, plan: ctx.planSnapshot });
 }
 
 export async function PUT(request: Request) {
   const ctx = await getTenantContext();
   if (!ctx.ok) return ctx.response;
   const { tenantId } = ctx;
+  const pro = requirePro(
+    ctx.planSnapshot,
+    "SEASON_PRO",
+    "Seasons are a Pro feature.",
+  );
+  if (pro) return pro;
+
   const body = upsertSchema.parse(await request.json());
 
   if (body.priorities.length > MAX_SEASON_PRIORITIES) {

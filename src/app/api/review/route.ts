@@ -9,7 +9,7 @@ export async function GET() {
   if (!ctx.ok) return ctx.response;
 
   const [summary, season] = await Promise.all([
-    getDashboard(ctx.tenantId, "week"),
+    getDashboard(ctx.tenantId, "week", ctx.plan),
     prisma.season.findFirst({
       where: { tenantId: ctx.tenantId, isActive: true },
       include: {

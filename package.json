@@ -13,6 +13,7 @@
     "db:studio": "prisma studio",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.ts",
     "icons": "node scripts/generate-brand-assets.mjs",
+    "ambient:check": "node scripts/check-ambient-assets.mjs",
     "postinstall": "prisma generate"
   },
   "prisma": {

@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
+import { atFreeSkillLimit } from "@/lib/billing/plan";
+import { usePlan } from "@/lib/billing/PlanProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import Link from "next/link";
 
 type Activity = {
   id: string;
@@ -22,6 +25,7 @@ type Skill = {
 
 export function SkillsManager() {
   const { t } = useLocale();
+  const { snapshot, refresh: refreshPlan } = usePlan();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [name, setName] = useState("");
@@ -53,12 +57,15 @@ export function SkillsManager() {
         body: JSON.stringify({ name: name.trim() }),
       });
       if (!res.ok) {
-        setMessage(t("skills.createError"));
+        setMessage(
+          res.status === 402 ? t("plan.limit.skills") : t("skills.createError"),
+        );
         return;
       }
       setName("");
       setMessage(t("skills.added"));
       await refresh();
+      await refreshPlan();
     });
   }
 
@@ -126,13 +133,21 @@ export function SkillsManager() {
           />
           <button
             type="button"
-            disabled={pending}
+            disabled={pending || atFreeSkillLimit(snapshot)}
             onClick={createSkill}
             className="accent-fill min-h-12 rounded-full px-5 font-semibold disabled:opacity-50"
           >
             {t("skills.add")}
           </button>
         </div>
+        {atFreeSkillLimit(snapshot) && (
+          <p className="mt-3 text-sm text-[var(--muted)]">
+            {t("plan.limit.skills")}{" "}
+            <Link href="/pricing" className="underline underline-offset-4">
+              {t("plan.upgrade")}
+            </Link>
+          </p>
+        )}
       </section>
 
       {skills.length === 0 ? (

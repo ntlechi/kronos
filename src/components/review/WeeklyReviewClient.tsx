@@ -7,9 +7,11 @@ import { cn } from "@/lib/cn";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { WeeklyReviewModel } from "@/lib/review";
 import { BurnoutBanner } from "@/components/dashboard/BurnoutBanner";
+import { usePlan } from "@/lib/billing/PlanProvider";
 
 export function WeeklyReviewClient() {
   const { t } = useLocale();
+  const { snapshot } = usePlan();
   const [review, setReview] = useState<WeeklyReviewModel | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -120,10 +122,12 @@ export function WeeklyReviewClient() {
 
       {!season?.priorities?.length && (
         <Link
-          href="/season"
+          href={snapshot.features.seasons ? "/season" : "/pricing"}
           className="block rounded-[var(--radius)] border border-dashed border-[var(--line)] px-4 py-4 text-sm text-[var(--muted)]"
         >
-          {t("review.seasonEmpty")}
+          {snapshot.features.seasons
+            ? t("review.seasonEmpty")
+            : t("plan.limit.seasons")}
         </Link>
       )}
 

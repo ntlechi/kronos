@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Pause, Play, Plus } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { usePlan } from "@/lib/billing/PlanProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import Link from "next/link";
 import type { ActivityCategory } from "@/lib/types";
 
 type Skill = { id: string; name: string };
@@ -31,6 +33,7 @@ export function QuickLog({
   onLogged?: () => void;
 }) {
   const { t } = useLocale();
+  const { snapshot } = usePlan();
   const router = useRouter();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activityId, setActivityId] = useState<string>("");
@@ -115,7 +118,7 @@ export function QuickLog({
           xpGains?: { name: string; xp: number }[];
         };
 
-        if (amount > 0) {
+        if (amount > 0 && snapshot.features.capital) {
           const expenseRes = await fetch("/api/expenses", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -275,20 +278,34 @@ export function QuickLog({
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-2 block text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
-            {t("log.cash")}
-          </span>
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            placeholder="0"
-            value={cash}
-            onChange={(e) => setCash(e.target.value)}
-            className="metric min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] px-4 text-[var(--ink)] outline-none focus:border-[var(--ink)]"
-          />
-        </label>
+        {snapshot.features.capital ? (
+          <label className="block">
+            <span className="mb-2 block text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+              {t("log.cash")}
+            </span>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              placeholder="0"
+              value={cash}
+              onChange={(e) => setCash(e.target.value)}
+              className="metric min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] px-4 text-[var(--ink)] outline-none focus:border-[var(--ink)]"
+            />
+          </label>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-[var(--line)] px-4 py-3">
+            <p className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+              {t("log.cash")}
+            </p>
+            <p className="mt-2 text-sm text-[var(--muted)]">
+              {t("plan.limit.capital")}{" "}
+              <Link href="/pricing" className="underline underline-offset-4">
+                {t("plan.upgrade")}
+              </Link>
+            </p>
+          </div>
+        )}
         <label className="block">
           <span className="mb-2 block text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
             {t("log.note")}

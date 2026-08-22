@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import Link from "next/link";
+import { atFreeActivityLimit } from "@/lib/billing/plan";
+import { usePlan } from "@/lib/billing/PlanProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 type Skill = { id: string; name: string };
@@ -16,6 +19,7 @@ type Activity = {
 
 export function ActivityManager() {
   const { t } = useLocale();
+  const { snapshot, refresh: refreshPlan } = usePlan();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [name, setName] = useState("");
   const [kind, setKind] = useState<"brand" | "personal" | "lifestyle">(
@@ -45,12 +49,17 @@ export function ActivityManager() {
         body: JSON.stringify({ name: name.trim(), kind }),
       });
       if (!res.ok) {
-        setMessage(t("activities.createError"));
+        setMessage(
+          res.status === 402
+            ? t("plan.limit.activities")
+            : t("activities.createError"),
+        );
         return;
       }
       setName("");
       setMessage(t("activities.added"));
       await refresh();
+      await refreshPlan();
     });
   }
 
@@ -78,12 +87,20 @@ export function ActivityManager() {
         body: JSON.stringify({
           id,
           name: editName.trim(),
-          hourlyRateCents:
-            rateNumber === null ? null : Math.round(rateNumber * 100),
+          ...(snapshot.features.hourlyRate
+            ? {
+                hourlyRateCents:
+                  rateNumber === null ? null : Math.round(rateNumber * 100),
+              }
+            : {}),
         }),
       });
       if (!res.ok) {
-        setMessage(t("activities.renameError"));
+        setMessage(
+          res.status === 402
+            ? t("plan.limit.rate")
+            : t("activities.renameError"),
+        );
         return;
       }
       setEditingId(null);
@@ -133,13 +150,21 @@ export function ActivityManager() {
           </select>
           <button
             type="button"
-            disabled={pending}
+            disabled={pending || atFreeActivityLimit(snapshot)}
             onClick={createActivity}
             className="accent-fill min-h-12 rounded-full px-5 font-semibold disabled:opacity-50"
           >
             {t("activities.add")}
           </button>
         </div>
+        {atFreeActivityLimit(snapshot) && (
+          <p className="mt-3 text-sm text-[var(--muted)]">
+            {t("plan.limit.activities")}{" "}
+            <Link href="/pricing" className="underline underline-offset-4">
+              {t("plan.upgrade")}
+            </Link>
+          </p>
+        )}
       </section>
 
       <ul className="space-y-2">
@@ -165,23 +190,32 @@ export function ActivityManager() {
                       className="min-h-10 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 outline-none"
                     />
                   </label>
-                  <label className="block">
-                    <span className="mb-1 block text-xs text-[var(--muted)]">
-                      {t("activities.rateLabel")}
-                    </span>
-                    <input
-                      type="number"
-                      min={0}
-                      step="1"
-                      placeholder={t("activities.ratePlaceholder")}
-                      value={editRate}
-                      onChange={(e) => setEditRate(e.target.value)}
-                      className="min-h-10 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 outline-none"
-                    />
-                    <span className="mt-1 block text-xs text-[var(--muted)]">
-                      {t("activities.rateHelp")}
-                    </span>
-                  </label>
+                  {snapshot.features.hourlyRate ? (
+                    <label className="block">
+                      <span className="mb-1 block text-xs text-[var(--muted)]">
+                        {t("activities.rateLabel")}
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        step="1"
+                        placeholder={t("activities.ratePlaceholder")}
+                        value={editRate}
+                        onChange={(e) => setEditRate(e.target.value)}
+                        className="min-h-10 w-full rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 outline-none"
+                      />
+                      <span className="mt-1 block text-xs text-[var(--muted)]">
+                        {t("activities.rateHelp")}
+                      </span>
+                    </label>
+                  ) : (
+                    <p className="text-xs text-[var(--muted)]">
+                      {t("plan.limit.rate")}{" "}
+                      <Link href="/pricing" className="underline underline-offset-4">
+                        {t("plan.upgrade")}
+                      </Link>
+                    </p>
+                  )}
                   <button
                     type="button"
                     onClick={() => saveEdit(activity.id)}
@@ -196,11 +230,12 @@ export function ActivityManager() {
                     <p className="truncate font-medium">{activity.name}</p>
                     <p className="text-xs text-[var(--muted)]">
                       {kindLabel(activity.kind)}
-                      {activity.hourlyRateCents != null
-                        ? t("activities.hourly", {
-                            rate: (activity.hourlyRateCents / 100).toFixed(0),
-                          })
-                        : ` · ${t("activities.rateNone")}`}
+                      {snapshot.features.hourlyRate &&
+                        (activity.hourlyRateCents != null
+                          ? t("activities.hourly", {
+                              rate: (activity.hourlyRateCents / 100).toFixed(0),
+                            })
+                          : ` · ${t("activities.rateNone")}`)}
                     </p>
                     {activity.skills?.length > 0 && (
                       <p className="mt-1 truncate text-xs text-[var(--accent)]">

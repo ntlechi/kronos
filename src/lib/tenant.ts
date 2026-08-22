@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { loadPlanSnapshot } from "@/lib/billing/enforce";
+import { normalizePlan, type PlanId, type PlanSnapshot } from "@/lib/billing/plan";
 import { prisma } from "@/lib/prisma";
 
 export class AuthTenantError extends Error {
@@ -16,6 +18,8 @@ export class AuthTenantError extends Error {
 export async function requireTenantId(): Promise<{
   userId: string;
   tenantId: string;
+  plan: PlanId;
+  planSnapshot: PlanSnapshot;
 }> {
   const session = await auth();
   const userId = session?.user?.id;
@@ -29,14 +33,21 @@ export async function requireTenantId(): Promise<{
     where: {
       tenantId_userId: { tenantId, userId },
     },
-    select: { id: true },
+    select: { id: true, tenant: { select: { plan: true } } },
   });
 
   if (!membership) {
     throw new AuthTenantError("Forbidden");
   }
 
-  return { userId, tenantId };
+  const planSnapshot = await loadPlanSnapshot(tenantId, userId);
+
+  return {
+    userId,
+    tenantId,
+    plan: normalizePlan(membership.tenant.plan),
+    planSnapshot,
+  };
 }
 
 export async function getTenantContext() {

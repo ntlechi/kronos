@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "license": "CC0 or equivalent royalty-free",
+  "folder": "public/audio/ambient",
+  "instructions": "Drop seamless loop files here. Prefer .ogg (smaller); .mp3 is fallback. Runtime picks the first format that exists — no code changes required. Until a file is present, Focus Runner uses procedural synth.",
+  "sounds": [
+    {
+      "id": "brown",
+      "files": ["brown.ogg", "brown.mp3"],
+      "hint": "Brown/red noise loop, 30–90s. Procedural fallback is already good."
+    },
+    {
+      "id": "cafe",
+      "files": ["cafe.ogg", "cafe.mp3"],
+      "hint": "Café murmur, no lyrics. Freesound / Pixabay CC0."
+    },
+    {
+      "id": "airport",
+      "files": ["airport.ogg", "airport.mp3"],
+      "hint": "Terminal ambience — distant activity, no clear speech."
+    },
+    {
+      "id": "fan",
+      "files": ["fan.ogg", "fan.mp3"],
+      "hint": "Steady desk or box fan, loop-friendly."
+    },
+    {
+      "id": "classical",
+      "files": ["classical.ogg", "classical.mp3"],
+      "hint": "Soft piano or strings, royalty-free / CC0, no vocals."
+    }
+  ],
+  "check": "npm run ambient:check"
+}

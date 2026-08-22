@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { UpgradeCard } from "@/components/billing/UpgradeCard";
+import { usePlan } from "@/lib/billing/PlanProvider";
 import { MAX_SEASON_PRIORITIES } from "@/lib/season";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
@@ -23,6 +25,7 @@ type Season = {
 
 export function SeasonEditor() {
   const { t } = useLocale();
+  const { snapshot } = usePlan();
   const [season, setSeason] = useState<Season | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [name, setName] = useState("");
@@ -40,7 +43,8 @@ export function SeasonEditor() {
       fetch("/api/projects").then((r) => r.json()),
     ]).then(([seasonData, projectData]) => {
       if (cancelled) return;
-      const s = seasonData.season as Season;
+      const s = seasonData.season as Season | null;
+      if (!s) return;
       setSeason(s);
       setName(s.name);
       setPriorities(
@@ -111,6 +115,12 @@ export function SeasonEditor() {
         setError(t("season.error"));
       }
     });
+  }
+
+  if (!snapshot.features.seasons) {
+    return (
+      <UpgradeCard title={t("season.title")} body={t("plan.limit.seasons")} />
+    );
   }
 
   if (!season) {

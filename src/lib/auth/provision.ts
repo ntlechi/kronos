@@ -47,6 +47,7 @@ export async function provisionWorkspace(input: {
       data: {
         name: `${user.name}'s workspace`,
         slug,
+        plan: "free",
       },
     });
 

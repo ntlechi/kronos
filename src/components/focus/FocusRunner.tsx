@@ -13,7 +13,15 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { createBrownNoise, type NoiseHandle } from "@/lib/audio/brownNoise";
+import {
+  AMBIENT_SOUND_IDS,
+  createAmbientSound,
+  loadAmbientPreference,
+  saveAmbientPreference,
+  preloadAmbientSound,
+  type AmbientHandle,
+  type AmbientSoundId,
+} from "@/lib/audio/ambientSound";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 type Activity = { id: string; name: string; color: string };
@@ -21,10 +29,18 @@ type Activity = { id: string; name: string; color: string };
 const DURATION_PRESETS = [15, 25, 45, 60, 90] as const;
 const PULSE_KEY = "kronos-log-pulse";
 
+const AMBIENT_LABEL_KEYS: Record<AmbientSoundId, "focus.ambient.brown" | "focus.ambient.cafe" | "focus.ambient.airport" | "focus.ambient.fan" | "focus.ambient.classical"> = {
+  brown: "focus.ambient.brown",
+  cafe: "focus.ambient.cafe",
+  airport: "focus.ambient.airport",
+  fan: "focus.ambient.fan",
+  classical: "focus.ambient.classical",
+};
+
 export function FocusRunner() {
   const { t } = useLocale();
   const router = useRouter();
-  const noiseRef = useRef<NoiseHandle | null>(null);
+  const noiseRef = useRef<AmbientHandle | null>(null);
 
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activityId, setActivityId] = useState("");
@@ -34,6 +50,7 @@ export function FocusRunner() {
   const [running, setRunning] = useState(false);
   const [immersive, setImmersive] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
+  const [ambientId, setAmbientId] = useState<AmbientSoundId>("brown");
   const [status, setStatus] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -47,13 +64,31 @@ export function FocusRunner() {
     durationRef.current = durationMin;
   }, [activityId, durationMin]);
 
+  const runningRef = useRef(running);
+  const soundOnRef = useRef(soundOn);
+
   useEffect(() => {
-    noiseRef.current = createBrownNoise();
+    runningRef.current = running;
+    soundOnRef.current = soundOn;
+  }, [running, soundOn]);
+
+  useEffect(() => {
+    setAmbientId(loadAmbientPreference());
+  }, []);
+
+  useEffect(() => {
+    preloadAmbientSound(ambientId);
+  }, [ambientId]);
+
+  useEffect(() => {
+    noiseRef.current?.dispose();
+    noiseRef.current = createAmbientSound(ambientId);
+    if (runningRef.current && soundOnRef.current) noiseRef.current?.start();
     return () => {
       noiseRef.current?.dispose();
       noiseRef.current = null;
     };
-  }, []);
+  }, [ambientId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -209,6 +244,12 @@ export function FocusRunner() {
     });
   }
 
+  function pickAmbient(id: AmbientSoundId) {
+    if (id === ambientId) return;
+    setAmbientId(id);
+    saveAmbientPreference(id);
+  }
+
   function pickDuration(m: number) {
     if (running) return;
     setDurationMin(m);
@@ -347,6 +388,28 @@ export function FocusRunner() {
           {pending ? t("focus.syncing") : status}
         </p>
       )}
+
+      <div className="w-full max-w-sm pt-2">
+        <p className="mb-2 text-center text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+          {t("focus.ambient.label")}
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {AMBIENT_SOUND_IDS.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => pickAmbient(id)}
+              className={cn(
+                "min-h-9 rounded-full border px-3 text-xs font-medium disabled:opacity-50",
+                ambientId === id ? "chip-selected" : "chip-idle",
+                !soundOn && ambientId === id && "opacity-60",
+              )}
+            >
+              {t(AMBIENT_LABEL_KEYS[id])}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 

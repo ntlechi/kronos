@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requireSkillSlot } from "@/lib/billing/enforce";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { getTenantContext } from "@/lib/tenant";
@@ -57,6 +58,7 @@ export async function GET() {
   });
 
   return NextResponse.json({
+    plan: ctx.planSnapshot,
     skills: skills.map((skill) => ({
       id: skill.id,
       name: skill.name,
@@ -75,6 +77,9 @@ export async function POST(request: Request) {
   const ctx = await getTenantContext();
   if (!ctx.ok) return ctx.response;
   const { tenantId } = ctx;
+  const blocked = requireSkillSlot(ctx.planSnapshot);
+  if (blocked) return blocked;
+
   const body = createSchema.parse(await request.json());
   const slug = await uniqueSkillSlug(tenantId, body.name);
 

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { KronosLogo } from "@/components/brand/KronosLogo";
+import { usePlan } from "@/lib/billing/PlanProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { Locale } from "@/lib/i18n/dictionaries";
 import { useTheme } from "@/lib/theme/ThemeProvider";
@@ -31,8 +32,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { locale, setLocale, t } = useLocale();
   const { theme, toggleTheme } = useTheme();
   const { data: session } = useSession();
+  const { snapshot } = usePlan();
   const isAuthRoute =
-    pathname.startsWith("/login") || pathname.startsWith("/register");
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/pricing");
   const logActive = pathname.startsWith("/log");
 
   if (isAuthRoute) {
@@ -65,6 +69,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
+          <Link
+            href="/pricing"
+            className="inline-flex min-h-9 items-center rounded-full border border-[var(--line)] bg-[var(--bg-elevated)] px-3 text-xs font-semibold"
+          >
+            {snapshot.isPro ? t("plan.badge.pro") : t("plan.badge.free")}
+          </Link>
           <ThemeLocaleControls
             locale={locale}
             setLocale={setLocale}

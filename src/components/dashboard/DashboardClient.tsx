@@ -8,6 +8,8 @@ import { BurnoutBanner } from "@/components/dashboard/BurnoutBanner";
 import { FoldableSkills } from "@/components/dashboard/FoldableSkills";
 import { PeriodTabs } from "@/components/dashboard/PeriodTabs";
 import { StatStrip } from "@/components/dashboard/StatStrip";
+import { UpgradeCard } from "@/components/billing/UpgradeCard";
+import { usePlan } from "@/lib/billing/PlanProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { DashboardSummary, Period } from "@/lib/types";
 
@@ -25,6 +27,7 @@ export function DashboardClient({
   initialPeriod?: Period;
 }) {
   const { t } = useLocale();
+  const { snapshot } = usePlan();
   const tRef = useRef(t);
   tRef.current = t;
 
@@ -124,6 +127,9 @@ export function DashboardClient({
       {summary && (
         <>
           <OnboardingQuest />
+          {!snapshot.isPro && (
+            <p className="text-xs text-[var(--muted)]">{t("plan.limit.history")}</p>
+          )}
           <StatStrip summary={summary} animate={animatePulse} />
           <BurnoutBanner
             status={summary.burnout}
@@ -136,12 +142,21 @@ export function DashboardClient({
                 {t("dashboard.breakdownTitle")}
               </h2>
               <div className="flex items-center gap-3">
-                <Link
-                  href="/season"
-                  className="text-xs font-medium text-[var(--muted)] underline decoration-[var(--line)] underline-offset-4"
-                >
-                  {t("season.open")}
-                </Link>
+                {snapshot.features.seasons ? (
+                  <Link
+                    href="/season"
+                    className="text-xs font-medium text-[var(--muted)] underline decoration-[var(--line)] underline-offset-4"
+                  >
+                    {t("season.open")}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/pricing"
+                    className="text-xs font-medium text-[var(--muted)] underline decoration-[var(--line)] underline-offset-4"
+                  >
+                    {t("season.open")} · Pro
+                  </Link>
+                )}
                 <p className="text-xs text-[var(--muted)]">
                   {t("dashboard.breakdownHint")}
                 </p>
@@ -155,6 +170,13 @@ export function DashboardClient({
           </section>
 
           <FoldableSkills skills={summary.skills} />
+
+          {!snapshot.isPro && (
+            <UpgradeCard
+              title={t("pricing.proName")}
+              body={t("plan.teaser")}
+            />
+          )}
         </>
       )}
     </div>

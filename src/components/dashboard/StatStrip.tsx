@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { formatHours, formatMoney } from "@/lib/aggregations";
+import { usePlan } from "@/lib/billing/PlanProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import Link from "next/link";
 import type { DashboardSummary } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
@@ -38,6 +40,7 @@ export function StatStrip({
   animate?: boolean;
 }) {
   const { t } = useLocale();
+  const { snapshot } = usePlan();
   const focusTotal = summary.deepMinutes + summary.shallowMinutes;
   const deepShare =
     focusTotal > 0 ? Math.round((summary.deepMinutes / focusTotal) * 100) : 0;
@@ -56,7 +59,7 @@ export function StatStrip({
     {
       id: "cash",
       label: t("stat.capitalOut"),
-      value: formatMoney(animatedCash),
+      value: snapshot.features.capital ? formatMoney(animatedCash) : "Pro",
     },
     {
       id: "switches",
@@ -120,21 +123,40 @@ export function StatStrip({
       </article>
 
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        {secondary.map((item) => (
-          <div
-            key={item.id}
-            className={cn(
-              "rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-3 py-3 sm:px-4 sm:py-4",
-            )}
-          >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[11px]">
-              {item.label}
-            </p>
-            <p className="metric mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
-              {item.value}
-            </p>
-          </div>
-        ))}
+        {secondary.map((item) => {
+          const locked = item.id === "cash" && !snapshot.features.capital;
+          const inner = (
+            <>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[11px]">
+                {item.label}
+              </p>
+              <p className="metric mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                {item.value}
+              </p>
+            </>
+          );
+          return locked ? (
+            <Link
+              key={item.id}
+              href="/pricing"
+              className={cn(
+                "rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-3 py-3 sm:px-4 sm:py-4",
+              )}
+              title={t("plan.limit.capital")}
+            >
+              {inner}
+            </Link>
+          ) : (
+            <div
+              key={item.id}
+              className={cn(
+                "rounded-[var(--radius)] border border-[var(--line)] bg-[var(--bg-elevated)] px-3 py-3 sm:px-4 sm:py-4",
+              )}
+            >
+              {inner}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

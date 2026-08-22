@@ -15,6 +15,10 @@ export async function GET(request: Request) {
     ? (raw as Period)
     : "week";
 
-  const summary = await getDashboard(ctx.tenantId, period);
-  return NextResponse.json({ summary });
+  const summary = await getDashboard(ctx.tenantId, period, ctx.plan);
+  return NextResponse.json({
+    summary,
+    plan: ctx.planSnapshot,
+    historyCapped: !ctx.planSnapshot.isPro && period === "year",
+  });
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requireActivitySlot, requirePro } from "@/lib/billing/enforce";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { getTenantContext } from "@/lib/tenant";
@@ -38,18 +39,16 @@ export async function GET() {
     },
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
   });
+  const mapped = projects.map((p) => ({
+    ...p,
+    skills: p.skillLinks.map((l) => l.skill),
+    skillIds: p.skillLinks.map((l) => l.skillId),
+  }));
   return NextResponse.json({
-    projects: projects.map((p) => ({
-      ...p,
-      skills: p.skillLinks.map((l) => l.skill),
-      skillIds: p.skillLinks.map((l) => l.skillId),
-    })),
+    projects: mapped,
     // UI alias — same entities, friendlier name for lifestyle + brands
-    activities: projects.map((p) => ({
-      ...p,
-      skills: p.skillLinks.map((l) => l.skill),
-      skillIds: p.skillLinks.map((l) => l.skillId),
-    })),
+    activities: mapped,
+    plan: ctx.planSnapshot,
   });
 }
 
@@ -57,7 +56,19 @@ export async function POST(request: Request) {
   const ctx = await getTenantContext();
   if (!ctx.ok) return ctx.response;
   const { tenantId } = ctx;
+  const blocked = requireActivitySlot(ctx.planSnapshot);
+  if (blocked) return blocked;
+
   const body = createSchema.parse(await request.json());
+  if (body.hourlyRateCents != null) {
+    const pro = requirePro(
+      ctx.planSnapshot,
+      "RATE_PRO",
+      "Hourly rates are a Pro feature.",
+    );
+    if (pro) return pro;
+  }
+
   const baseSlug = slugify(body.name) || "project";
   let slug = baseSlug;
   let i = 1;
@@ -129,6 +140,18 @@ export async function PATCH(request: Request) {
   });
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (
+    body.hourlyRateCents !== undefined &&
+    body.hourlyRateCents !== existing.hourlyRateCents
+  ) {
+    const pro = requirePro(
+      ctx.planSnapshot,
+      "RATE_PRO",
+      "Hourly rates are a Pro feature.",
+    );
+    if (pro) return pro;
   }
 
   if (body.skillIds) {

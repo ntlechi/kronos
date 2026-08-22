@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requirePro } from "@/lib/billing/enforce";
 import { prisma } from "@/lib/prisma";
 import { getTenantContext } from "@/lib/tenant";
 
@@ -15,6 +16,9 @@ export async function GET() {
   const ctx = await getTenantContext();
   if (!ctx.ok) return ctx.response;
   const { tenantId } = ctx;
+  if (!ctx.planSnapshot.features.capital) {
+    return NextResponse.json({ expenses: [], plan: ctx.planSnapshot });
+  }
   const expenses = await prisma.expenseLog.findMany({
     where: { tenantId },
     include: {
@@ -30,6 +34,13 @@ export async function POST(request: Request) {
   const ctx = await getTenantContext();
   if (!ctx.ok) return ctx.response;
   const { tenantId } = ctx;
+  const pro = requirePro(
+    ctx.planSnapshot,
+    "CAPITAL_PRO",
+    "Cash and capital tracking is a Pro feature.",
+  );
+  if (pro) return pro;
+
   const body = createSchema.parse(await request.json());
 
   const project = await prisma.project.findFirst({
