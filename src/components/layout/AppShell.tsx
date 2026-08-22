@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { KronosLogo } from "@/components/brand/KronosLogo";
+import { LegalLinks } from "@/components/legal/LegalLinks";
 import { usePlan } from "@/lib/billing/PlanProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import type { Locale } from "@/lib/i18n/dictionaries";
@@ -36,7 +37,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isAuthRoute =
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
-    pathname.startsWith("/pricing");
+    pathname.startsWith("/pricing") ||
+    pathname.startsWith("/privacy") ||
+    pathname.startsWith("/terms");
   const logActive = pathname.startsWith("/log");
 
   if (isAuthRoute) {
@@ -96,17 +99,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <p className="mt-8 pb-2 text-center text-[11px] tracking-wide text-[var(--muted)]">
-        {t("brand.powered")}{" "}
-        <a
-          href="https://arsitech.io"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 transition-colors hover:text-[var(--ink)]"
-        >
-          Arsitech.io
-        </a>
-      </p>
+      <div className="mt-8 space-y-2 pb-2">
+        <p className="text-center text-[11px] tracking-wide text-[var(--muted)]">
+          {t("brand.powered")}{" "}
+          <a
+            href="https://arsitech.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 transition-colors hover:text-[var(--ink)]"
+          >
+            Arsitech.io
+          </a>
+        </p>
+        <LegalLinks />
+      </div>
 
       <nav
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] backdrop-blur-xl"

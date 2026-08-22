@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { KronosLogo } from "@/components/brand/KronosLogo";
+import { LegalLinks } from "@/components/legal/LegalLinks";
+import { SUPPORT_EMAIL } from "@/lib/legal/contact";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function LoginForm() {
@@ -74,6 +76,15 @@ export function LoginForm() {
           required
         />
         {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
+        <p className="text-xs text-[var(--muted)]">
+          {t("auth.forgot")}{" "}
+          <a
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="underline underline-offset-4"
+          >
+            {SUPPORT_EMAIL}
+          </a>
+        </p>
         <button
           type="submit"
           disabled={pending}
@@ -201,6 +212,17 @@ export function RegisterForm() {
           </span>
         </label>
         {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
+        <p className="text-xs leading-relaxed text-[var(--muted)]">
+          {t("auth.register.agree")}{" "}
+          <Link href="/terms" className="underline underline-offset-4">
+            {t("legal.terms")}
+          </Link>{" "}
+          {t("legal.and")}{" "}
+          <Link href="/privacy" className="underline underline-offset-4">
+            {t("legal.privacy")}
+          </Link>
+          .
+        </p>
         <button
           type="submit"
           disabled={pending}
@@ -243,6 +265,7 @@ function AuthCard({
           {t("nav.pricing")}
         </Link>
       </p>
+      <LegalLinks className="mt-2" />
     </div>
   );
 }

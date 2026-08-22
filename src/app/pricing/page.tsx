@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { KronosLogo } from "@/components/brand/KronosLogo";
 import { PricingTable } from "@/components/billing/PricingTable";
+import { LegalLinks } from "@/components/legal/LegalLinks";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export default function PricingPage() {
@@ -79,6 +80,8 @@ export default function PricingPage() {
           </a>
         </p>
       </section>
+
+      <LegalLinks />
     </div>
   );
 }

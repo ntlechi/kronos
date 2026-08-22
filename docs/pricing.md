@@ -26,3 +26,5 @@ New workspaces start on **Free**. Stripe checkout is stubbed (`coming soon`) —
 ## Public page
 
 `/pricing` is unauthenticated — share from Arsitech and Survive Backpacking.
+
+Legal pages (public): `/privacy` and `/terms`. Privacy officer: privacy@oskronos.com (forward to your inbox).

@@ -284,6 +284,12 @@ const en: Dict = {
   "auth.error.signInAfterRegister":
     "Account created, but sign-in failed. Try logging in.",
   "auth.signOut": "Sign out",
+  "auth.forgot": "Forgot your password? Email",
+  "auth.register.agree": "By creating an account you agree to the",
+  "legal.privacy": "Privacy",
+  "legal.terms": "Terms",
+  "legal.and": "and",
+  "legal.updated": "Updated {date}",
 
   "plan.free": "Free",
   "plan.pro": "Pro",
@@ -615,6 +621,12 @@ const fr: Dict = {
   "auth.error.signInAfterRegister":
     "Compte créé, mais la connexion a échoué. Essaie de te connecter.",
   "auth.signOut": "Se déconnecter",
+  "auth.forgot": "Mot de passe oublié ? Écris à",
+  "auth.register.agree": "En créant un compte, tu acceptes les",
+  "legal.privacy": "Confidentialité",
+  "legal.terms": "Conditions",
+  "legal.and": "et la",
+  "legal.updated": "Mise à jour {date}",
 
   "plan.free": "Gratuit",
   "plan.pro": "Pro",
